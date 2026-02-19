@@ -2,41 +2,40 @@ import pymysql
 from datetime import datetime
 
 
-# Funkcija za povezivanje sa bazom
+
 def connect_to_database():
     return pymysql.connect(
         host="localhost",
         user="root",
-        password="Mozdabek15",  # Promeni prema tvojoj MySQL šifri
+        password="Mozdabek15", 
         database="python"
     )
 
 
-# Dohvatanje naziva tima po ID-ju
+
 def get_team_name_by_id(team_id):
     con = connect_to_database()
     cursor = con.cursor()
 
-    # Proveri upit i rezultat
+  
     cursor.execute("SELECT name FROM teams WHERE id = %s", (team_id,))
     result = cursor.fetchone()
     con.close()
 
-    # Dodaj debug ispis za praćenje
+   
     return result[0] if result else "Nepoznat tim"
 
 
-# Dohvatanje svih utakmica sa imenima timova
+
 def get_all_games():
     con = connect_to_database()
     cursor = con.cursor()
 
-    # Dohvati sve utakmice sa ID-jevima
+   
     cursor.execute("SELECT id, team_a_id, team_b_id, home_team_id, match_date FROM games")
     games = cursor.fetchall()
     con.close()
 
-    # Prevedi ID-jeve u nazive
     games_with_names = []
     for game in games:
         game_id = game[0]
@@ -49,12 +48,12 @@ def get_all_games():
     return games_with_names
 
 
-# Zakazivanje nove utakmice
+
 def schedule_match(team_a, team_b, home_team, match_date):
     con = connect_to_database()
     cursor = con.cursor()
 
-    # Dodaj timove ako ne postoje
+  
     cursor.execute("SELECT id FROM teams WHERE name = %s", (team_a,))
     team_a_id = cursor.fetchone()
     if not team_a_id:
@@ -73,7 +72,7 @@ def schedule_match(team_a, team_b, home_team, match_date):
     else:
         team_b_id = team_b_id[0]
 
-    # Odredi ID domaćina
+    
     home_team_id = team_a_id if home_team == "Tim A" else team_b_id
 
     cursor.execute(
@@ -358,6 +357,7 @@ def upcoming_games():
     for game in games:
         if game[4] >= datetime.now():
             print(f"{game[1]} vs {game[2]}, host: {game[3]}, date: {game[4]}")
+
 
 
 
